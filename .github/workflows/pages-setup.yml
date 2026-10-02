@@ -1,0 +1,24 @@
+name: Temporary Pages setup
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable GitHub Pages for this repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${GITHUB_REPOSITORY}/pages" > /dev/null 2>&1; then
+            echo "GitHub Pages is already configured."
+          else
+            echo '{"source":{"branch":"master","path":"/"}}' > /tmp/pages.json
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/pages" --input /tmp/pages.json
+          fi
+          gh api "repos/${GITHUB_REPOSITORY}/pages"
